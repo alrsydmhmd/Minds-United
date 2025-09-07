@@ -1,62 +1,64 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import Logo from "../../assets/1.png"
 
 export default function Navbar() {
-  const [open, setOpen] = useState(false);
+  const [show, setShow] = useState(true);
+  const [lastScrollY, setLastScrollY] = useState(0);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.scrollY > lastScrollY) {
+        setShow(false); // Scroll ke bawah -> hide
+      } else {
+        setShow(true); // Scroll ke atas -> show
+      }
+      setLastScrollY(window.scrollY);
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [lastScrollY]);
+
+  // Fungsi untuk smooth scroll manual (opsional, kalau mau kontrol durasi)
+  const scrollToSection = (id) => {
+    const section = document.querySelector(id);
+    if (section) {
+      section.scrollIntoView({ behavior: "smooth" });
+    }
+  };
 
   return (
-    <header className="bg-white shadow-md fixed w-full top-0 z-50">
+    <header
+      className={`bg-white shadow-md w-full sticky top-0 z-50 transition-transform duration-500 ease-in-out ${
+        show ? "translate-y-0" : "-translate-y-full"
+      }`}
+    >
       <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-16">
         {/* Brand */}
         <a href="#home" className="flex items-center gap-2">
-          <div className="w-9 h-9 bg-gradient-to-tr from-blue-500 to-teal-400 rounded-lg shadow-lg" />
+          <img src={Logo} alt="" className="w-10 h-10 object-cover rounded-lg shadow-lg"/>
           <div className="flex flex-col leading-tight">
             <span className="font-bold text-gray-900 text-sm">Minds United</span>
             <span className="text-xs text-gray-500">Creative Center</span>
           </div>
         </a>
 
-        {/* Desktop Menu */}
+        {/* Menu Desktop */}
         <ul className="hidden md:flex items-center gap-6 text-gray-600">
-          <li><a href="#tentang" className="hover:text-gray-900">Tentang</a></li>
-          <li><a href="#program" className="hover:text-gray-900">Program</a></li>
-          <li><a href="#layanan" className="hover:text-gray-900">Layanan</a></li>
-          <li><a href="#artikel" className="hover:text-gray-900">Artikel</a></li>
+          <li><button onClick={() => scrollToSection("#tentang")} className="hover:text-gray-900">Tentang</button></li>
+          <li><button onClick={() => scrollToSection("#program")} className="hover:text-gray-900">Program</button></li>
+          <li><button onClick={() => scrollToSection("#layanan")} className="hover:text-gray-900">Layanan</button></li>
+          <li><button onClick={() => scrollToSection("#artikel")} className="hover:text-gray-900">Artikel</button></li>
           <li>
-            <a href="#konsultasi" className="bg-gradient-to-tr from-blue-500 to-teal-400 text-white px-4 py-2 rounded-lg shadow hover:opacity-90">
+            <button
+              onClick={() => scrollToSection("#konsultasi")}
+              className="bg-gradient-to-tr from-blue-500 to-teal-400 text-white px-4 py-2 rounded-lg shadow hover:opacity-90"
+            >
               Konsultasi Gratis
-            </a>
+            </button>
           </li>
         </ul>
-
-        {/* Mobile Burger */}
-        <button
-          onClick={() => setOpen(!open)}
-          className="md:hidden p-2 rounded-lg hover:bg-gray-100"
-        >
-          <div className="space-y-1">
-            <span className="block w-5 h-0.5 bg-gray-800"></span>
-            <span className="block w-5 h-0.5 bg-gray-800"></span>
-            <span className="block w-5 h-0.5 bg-gray-800"></span>
-          </div>
-        </button>
       </nav>
-
-      {/* Mobile Menu */}
-      {open && (
-        <div className="md:hidden bg-white border-t shadow">
-          <ul className="flex flex-col gap-4 p-4 text-gray-600">
-            <li><a href="#tentang">Tentang</a></li>
-            <li><a href="#program">Program</a></li>
-            <li><a href="#layanan">Layanan</a></li>
-            <li><a href="#artikel">Artikel</a></li>
-            <li>
-              <a href="#konsultasi" className="bg-gradient-to-tr from-blue-500 to-teal-400 text-white px-4 py-2 rounded-lg shadow">
-                Konsultasi Gratis
-              </a>
-            </li>
-          </ul>
-        </div>
-      )}
     </header>
   );
 }

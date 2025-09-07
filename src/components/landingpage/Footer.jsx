@@ -1,64 +1,120 @@
+import { FaEnvelope, FaWhatsapp, FaInstagram, FaLinkedin } from "react-icons/fa";
+import { FaInfoCircle, FaListAlt, FaConciergeBell, FaNewspaper } from "react-icons/fa";
+
 export default function Footer() {
-    const year = new Date().getFullYear();
-  
-    return (
-      <footer className="bg-gray-900 text-gray-300">
-        <div className="max-w-7xl mx-auto px-4 py-12 grid md:grid-cols-4 gap-8">
-          {/* Brand */}
-          <div>
-            <div className="w-9 h-9 bg-gradient-to-tr from-blue-500 to-teal-400 rounded-lg mb-4" />
-            <h3 className="text-lg font-bold text-white">Minds United Creative Center</h3>
-            <p className="mt-2 text-sm text-gray-400">
-              Pusat pertumbuhan diri dan kesehatan mental. Kolaborasi kreatif untuk hidup yang lebih bermakna.
-            </p>
+  return (
+    <footer className="bg-gray-900 text-white py-10">
+      <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-8 px-4">
+        {/* Brand */}
+        <div>
+          <div className="flex items-center gap-2 mb-3">
+            <div className="w-9 h-9 bg-gradient-to-tr from-blue-500 to-teal-400 rounded-lg shadow-lg" />
+            <span className="font-bold">Minds United Creative Center</span>
           </div>
-  
-          {/* Navigasi */}
-          <div>
-            <h4 className="text-white font-semibold mb-3">Navigasi</h4>
-            <ul className="space-y-2">
-              <li><a href="#tentang" className="hover:text-white">Tentang</a></li>
-              <li><a href="#program" className="hover:text-white">Program</a></li>
-              <li><a href="#layanan" className="hover:text-white">Layanan</a></li>
-              <li><a href="#artikel" className="hover:text-white">Artikel</a></li>
-            </ul>
-          </div>
-  
-          {/* Kontak */}
-          <div>
-            <h4 className="text-white font-semibold mb-3">Kontak</h4>
-            <ul className="space-y-2">
-              <li><a href="mailto:hello@mindsunited.id" className="hover:text-white">hello@mindsunited.id</a></li>
-              <li><a href="tel:+620000000000" className="hover:text-white">+62 000-0000-000</a></li>
-              <li><a href="https://www.instagram.com/kami.mindsunited?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw==" className="hover:text-white">@kami.mindsunited</a></li>
-            </ul>
-          </div>
-  
-          {/* Newsletter */}
-          <div>
-            <h4 className="text-white font-semibold mb-3">Newsletter</h4>
-            <form className="flex flex-col gap-3">
-              <input
-                type="email"
-                placeholder="Email Anda"
-                className="px-4 py-2 rounded-lg bg-gray-800 border border-gray-700 text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                required
-              />
-              <button
-                type="submit"
-                className="bg-gradient-to-tr from-blue-500 to-teal-400 text-white px-4 py-2 rounded-lg font-semibold hover:opacity-90"
+          <p className="text-gray-400 text-sm">
+            Pusat pertumbuhan diri dan kesehatan mental.  
+            Kolaborasi kreatif untuk hidup yang lebih bermakna.
+          </p>
+        </div>
+
+        {/* Navigasi */}
+        <div>
+          <h4 className="font-semibold mb-3">Navigasi</h4>
+          <ul className="space-y-2 text-gray-400">
+            <li>
+              <a href="#tentang" className="flex items-center gap-2 hover:text-white">
+                <FaInfoCircle /> Tentang
+              </a>
+            </li>
+            <li>
+              <a href="#program" className="flex items-center gap-2 hover:text-white">
+                <FaListAlt /> Program
+              </a>
+            </li>
+            <li>
+              <a href="#layanan" className="flex items-center gap-2 hover:text-white">
+                <FaConciergeBell /> Layanan
+              </a>
+            </li>
+            <li>
+              <a href="#artikel" className="flex items-center gap-2 hover:text-white">
+                <FaNewspaper /> Artikel
+              </a>
+            </li>
+          </ul>
+        </div>
+
+
+        {/* Kontak */}
+        <div>
+          <h4 className="font-semibold mb-3">Kontak</h4>
+          <ul className="space-y-3">
+            <li>
+              <a
+                href="mailto:hello@mindsunited.id"
+                className="flex items-center gap-2 text-gray-400 hover:text-white"
               >
-                Daftar
-              </button>
-            </form>
-          </div>
+                <FaEnvelope /> hello@mindsunited.id
+              </a>
+            </li>
+            <li>
+              <a
+                href="https://wa.me/628123456789"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-2 text-gray-400 hover:text-white"
+              >
+                <FaWhatsapp /> WhatsApp
+              </a>
+            </li>
+            <li>
+              <a
+                href="https://instagram.com/mindsunited"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-2 text-gray-400 hover:text-white"
+              >
+                <FaInstagram /> Instagram
+              </a>
+            </li>
+            <li>
+              <a 
+                href="https://linkedin.com" 
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-2 text-gray-400 hover:text-white"
+                >
+                  <FaLinkedin /> Linkedin 
+              </a>
+            </li>
+          </ul>
         </div>
-  
-        {/* Bottom */}
-        <div className="border-t border-gray-800 py-4 text-center text-sm text-gray-500">
-          © {year} Minds United Creative Center. All rights reserved.
+
+        {/* Konsultasi Gratis Singkat */}
+        <div>
+          <h4 className="font-semibold mb-3">Konsultasi Gratis</h4>
+          <p className="text-gray-400 text-sm mb-4">
+            Masukan data singkat anda untuk memulai konsultasi.
+          </p>
+          <input 
+            type="text" 
+            placeholder="Nama Anda"
+            className="w-full px-3 py-2 rounded-mg bg-gray-800 text-gray-200 border border-gray-700 mb-3" 
+          />
+          <input 
+            type="text" 
+            placeholder="Email Anda"
+            className="w-full px-3 py-2 rounded-mg bg-gray-800 text-gray-200 border border-gray-700 mb-3" 
+          />
+          <button className="w-full bg-gradient-to-tr from-blue-500 to-teal-400 py-2 rounded-mg text-white">
+            Kirim
+          </button>
         </div>
-      </footer>
-    );
-  }
-  
+      </div>
+
+      <div className="border-t border-gray-700 mt-8 pt-4 text-center text-gray-500 text-sm">
+        © 2025 Minds United Creative Center. All rights reserved.
+      </div>
+    </footer>
+  );
+}

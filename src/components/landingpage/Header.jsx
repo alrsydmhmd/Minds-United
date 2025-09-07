@@ -1,3 +1,5 @@
+import Minds from "../../assets/mind.jpg"
+
 export default function Header() {
     return (
       <section id="home" className="pt-28 pb-16 bg-gradient-to-b from-blue-50 to-white">
@@ -46,9 +48,9 @@ export default function Header() {
             <div className="absolute w-48 h-48 bg-blue-300 rounded-full blur-3xl opacity-30 top-0 left-0"></div>
             <div className="absolute w-60 h-60 bg-teal-300 rounded-full blur-3xl opacity-30 bottom-0 right-0"></div>
             <img
-              src="https://via.placeholder.com/400x300"
+              src={Minds}
               alt="Ilustrasi"
-              className="relative z-10 rounded-lg shadow-lg"
+              className="rounded-lg shadow-lg w-[400px] h-[450px] object-cover"
             />
           </div>
         </div>
