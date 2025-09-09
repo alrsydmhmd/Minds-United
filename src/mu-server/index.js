@@ -1,92 +1,87 @@
 import express from "express";
-import bcrypt from "bcryptjs";
-import jwt from "jsonwebtoken";
-import dotenv from "dotenv";
+import mysql from "mysql2";
 import cors from "cors";
+import dotenv from "dotenv";
+import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
 
 dotenv.config();
 const app = express();
-app.use(cors({
-    origin: "http://localhost:5173",
-    methods: ["GET", "POST", "PUT", "DELETE"],
-    allowedHeaders: ["Content-Type", "Authorization"]
-}));
-
+app.use(cors());
 app.use(express.json());
 
-// Simpan user sementara di memory (kalau mau, nanti bisa pindah ke database)
-let users = [];
+// Koneksi MySQL
+const db = mysql.createConnection({
+  host: process.env.DB_HOST,
+  user: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
+  database: process.env.DB_NAME,
+});
 
-// Middleware untuk verifikasi JWT
-function authMiddleware(req, res, next) {
-  const token = req.headers.authorization?.split(" ")[1];
-  if (!token) return res.status(401).json({ message: "Token diperlukan" });
-
-  try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    req.user = decoded;
-    next();
-  } catch {
-    res.status(401).json({ message: "Token tidak valid" });
+db.connect(err => {
+  if (err) {
+    console.error("Database connection failed:", err);
+    return;
   }
-}
+  console.log("✅ Connected to MySQL");
+});
 
-// Register endpoint
+app.get("/", (req, res) => {
+  res.send("API Server Running");
+});
+
+app.get("/register", (req, res) => {
+  res.send("Register endpoint ready. Please use POST method to register.");
+});
+
+// Registrasi
 app.post("/register", async (req, res) => {
   const { username, password, role, adminToken } = req.body;
 
-  // Cegah duplikat username
-  if (users.find((u) => u.username === username)) {
-    return res.status(400).json({ message: "Username sudah digunakan" });
-  }
-
-  // Validasi role admin pakai token khusus
+  // Validasi jika role admin harus pakai token
   if (role === "admin" && adminToken !== process.env.ADMIN_TOKEN) {
-    return res.status(403).json({ message: "Token admin salah!" });
+    return res.status(403).json({ message: "Invalid admin token" });
   }
 
-  // Hash password
   const hashedPassword = await bcrypt.hash(password, 10);
-  users.push({ username, password: hashedPassword, role });
 
-  res.json({ message: "Registrasi berhasil!" });
+  db.query(
+    "INSERT INTO users (username, password, role) VALUES (?, ?, ?)",
+    [username, hashedPassword, role || "user"],
+    (err) => {
+      if (err) return res.status(500).json({ error: err.message });
+      res.json({ message: "User registered successfully" });
+    }
+  );
 });
 
-// Login endpoint
-app.post("/login", async (req, res) => {
+app.post("/login", (req, res) => {
   const { username, password } = req.body;
 
-  const user = users.find((u) => u.username === username);
-  if (!user) return res.status(400).json({ message: "User tidak ditemukan" });
+  db.query(
+    "SELECT * FROM users WHERE username = ?",
+    [username],
+    async (err, results) => {
+      if (err) return res.status(500).json({ error: err.message });
+      if (results.length === 0)
+        return res.status(401).json({ message: "User not found" });
 
-  const match = await bcrypt.compare(password, user.password);
-  if (!match) return res.status(400).json({ message: "Password salah" });
+      const user = results[0];
+      const match = await bcrypt.compare(password, user.password);
+      if (!match)
+        return res.status(401).json({ message: "Password incorrect" });
 
-  // Buat token JWT
-  const token = jwt.sign(
-    { username: user.username, role: user.role },
-    process.env.JWT_SECRET,
-    { expiresIn: "1h" }
+      const token = jwt.sign(
+        { id: user.id, role: user.role },
+        process.env.JWT_SECRET,
+        { expiresIn: "1h" }
+      );
+
+      res.json({ message: "Login successful", token, role: user.role });
+    }
   );
-
-  res.json({ message: "Login berhasil", role: user.role, token });
 });
 
-// Endpoint khusus admin
-app.get("/admin", authMiddleware, (req, res) => {
-  if (req.user.role !== "admin") {
-    return res.status(403).json({ message: "Akses ditolak" });
-  }
-  res.json({ message: "Halo Admin!" });
+app.listen(process.env.PORT, () => {
+  console.log(`🚀 Server running at http://localhost:${process.env.PORT}`);
 });
-
-// Endpoint khusus user
-app.get("/user", authMiddleware, (req, res) => {
-  if (req.user.role !== "user") {
-    return res.status(403).json({ message: "Akses ditolak" });
-  }
-  res.json({ message: "Halo User!" });
-});
-
-const PORT = process.env.PORT || 4000;
-app.listen(PORT, () => console.log(`Server listening on http://localhost:${PORT}`));

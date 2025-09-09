@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-export default function SignIn() {
+export default function Signin() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
@@ -10,37 +10,45 @@ export default function SignIn() {
     e.preventDefault();
 
     try {
-      const res = await fetch("http://localhost:4000/login", {
+      const response = await fetch("http://localhost:4000/login", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json"
+        },
         body: JSON.stringify({ username, password })
       });
 
-      const data = await res.json();
+      const data = await response.json();
 
-      if (!res.ok) {
-        alert(data.message);
+      if (!response.ok) {
+        alert(data.message || "Login gagal!");
         return;
       }
 
-      // Simpan token di localStorage
+      // Simpan token & role di localStorage
       localStorage.setItem("token", data.token);
       localStorage.setItem("role", data.role);
 
-      // Arahkan ke dashboard sesuai role
+      alert("Login berhasil!");
+
+      // Redirect sesuai role
       if (data.role === "admin") {
-        navigate("/dashboard/admin");
+        navigate("/dashboard-admin");
       } else {
-        navigate("/dashboard/user");
+        navigate("/dashboard-user");
       }
-    } catch (err) {
-      alert("Gagal login: " + err.message);
+    } catch (error) {
+      console.error("Error:", error);
+      alert("Terjadi kesalahan saat login.");
     }
   };
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-100">
-      <form onSubmit={handleLogin} className="bg-white p-8 rounded-lg shadow-lg w-96">
+      <form
+        onSubmit={handleLogin}
+        className="bg-white p-8 rounded-lg shadow-lg w-96"
+      >
         <h2 className="text-2xl font-bold mb-6 text-center">Login</h2>
 
         <input
@@ -61,7 +69,10 @@ export default function SignIn() {
           className="w-full p-3 border rounded mb-4"
         />
 
-        <button type="submit" className="w-full bg-blue-500 text-white py-2 rounded hover:bg-blue-600">
+        <button
+          type="submit"
+          className="w-full bg-blue-500 text-white py-2 rounded hover:bg-blue-600"
+        >
           Login
         </button>
       </form>

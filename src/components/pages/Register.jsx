@@ -1,37 +1,48 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
 
 export default function Register() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [role, setRole] = useState("user");
-  const [adminToken, setAdminToken] = useState(""); // token khusus admin
-  const navigate = useNavigate();
+  const [adminToken, setAdminToken] = useState("");
 
   const handleRegister = async (e) => {
     e.preventDefault();
 
     try {
-      const res = await fetch("http://localhost:4000/register", {
+      const response = await fetch("http://localhost:4000/register", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ username, password, role, adminToken })
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          username,
+          password,
+          role,
+          adminToken
+        })
       });
 
-      const data = await res.json();
-      alert(data.message);
+      const data = await response.json();
 
-      if (res.ok) {
-        navigate("/signin");
+      if (!response.ok) {
+        alert(data.message || "Registrasi gagal!");
+        return;
       }
-    } catch (err) {
-      alert("Gagal register: " + err.message);
+
+      alert(data.message || "Registrasi berhasil!");
+    } catch (error) {
+      console.error("Error:", error);
+      alert("Terjadi kesalahan saat registrasi.");
     }
   };
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-100">
-      <form onSubmit={handleRegister} className="bg-white p-8 rounded-lg shadow-lg w-96">
+      <form
+        onSubmit={handleRegister}
+        className="bg-white p-8 rounded-lg shadow-lg w-96"
+      >
         <h2 className="text-2xl font-bold mb-6 text-center">Registrasi</h2>
 
         <input
@@ -61,18 +72,21 @@ export default function Register() {
           <option value="admin">Admin</option>
         </select>
 
-        {/* Token admin hanya tampil kalau role = admin */}
         {role === "admin" && (
           <input
             type="text"
             placeholder="Admin Token"
             value={adminToken}
             onChange={(e) => setAdminToken(e.target.value)}
+            required={role === "admin"}
             className="w-full p-3 border rounded mb-4"
           />
         )}
 
-        <button type="submit" className="w-full bg-blue-500 text-white py-2 rounded hover:bg-blue-600">
+        <button
+          type="submit"
+          className="w-full bg-blue-500 text-white py-2 rounded hover:bg-blue-600"
+        >
           Daftar
         </button>
       </form>
