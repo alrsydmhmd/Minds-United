@@ -48,13 +48,14 @@ app.post("/register", async (req, res) => {
   db.query(
     "INSERT INTO users (username, password, role) VALUES (?, ?, ?)",
     [username, hashedPassword, role || "user"],
-    (err) => {
+    (err, result) => {
       if (err) return res.status(500).json({ error: err.message });
       res.json({ message: "User registered successfully" });
     }
   );
 });
 
+// Login
 app.post("/login", (req, res) => {
   const { username, password } = req.body;
 
