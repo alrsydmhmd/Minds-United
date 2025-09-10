@@ -33,9 +33,9 @@ export default function Signin() {
 
       // Redirect sesuai role
       if (data.role === "admin") {
-        navigate("/dashboard-admin");
+        navigate("/dashboard/admin");
       } else {
-        navigate("/dashboard-user");
+        navigate("/dashboard/user");
       }
     } catch (error) {
       console.error("Error:", error);

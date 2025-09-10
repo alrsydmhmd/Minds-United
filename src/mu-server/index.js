@@ -1,14 +1,19 @@
+// src/mu-server/index.js
 import express from "express";
 import mysql from "mysql2";
 import cors from "cors";
 import dotenv from "dotenv";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+import usersRouter from "./routes/users.js";
 
 dotenv.config();
 const app = express();
 app.use(cors());
 app.use(express.json());
+
+// Routes
+app.use("/users", usersRouter);
 
 // Koneksi MySQL
 const db = mysql.createConnection({
@@ -20,69 +25,74 @@ const db = mysql.createConnection({
 
 db.connect(err => {
   if (err) {
-    console.error("Database connection failed:", err);
-    return;
+    console.error("❌ Database connection failed:", err);
+    process.exit(1);
   }
   console.log("✅ Connected to MySQL");
 });
 
+// API Root
 app.get("/", (req, res) => {
-  res.send("API Server Running");
+  res.send("Auth API Running");
 });
 
-app.get("/register", (req, res) => {
-  res.send("Register endpoint ready. Please use POST method to register.");
-});
+// REGISTER
+app.post("/api/register", async (req, res) => {
+  try {
+    const { username, password, role } = req.body;
 
-// Registrasi
-app.post("/register", async (req, res) => {
-  const { username, password, role, adminToken } = req.body;
-
-  // Validasi jika role admin harus pakai token
-  if (role === "admin" && adminToken !== process.env.ADMIN_TOKEN) {
-    return res.status(403).json({ message: "Invalid admin token" });
-  }
-
-  const hashedPassword = await bcrypt.hash(password, 10);
-
-  db.query(
-    "INSERT INTO users (username, password, role) VALUES (?, ?, ?)",
-    [username, hashedPassword, role || "user"],
-    (err, result) => {
-      if (err) return res.status(500).json({ error: err.message });
-      res.json({ message: "User registered successfully" });
+    // Validasi input
+    if (!username || !password) {
+      return res.status(400).json({ message: "Username dan password wajib diisi" });
     }
-  );
+
+    // Cek username sudah ada
+    db.query("SELECT * FROM users WHERE username = ?", [username], async (err, results) => {
+      if (err) return res.status(500).json({ error: err.message });
+      if (results.length > 0) return res.status(400).json({ message: "Username sudah terdaftar" });
+
+      // Hash password
+      const hashedPassword = await bcrypt.hash(password, 10);
+
+      // Simpan ke DB
+      db.query(
+        "INSERT INTO users (username, password, role) VALUES (?, ?, ?)",
+        [username, hashedPassword, role || "user"],
+        (err) => {
+          if (err) return res.status(500).json({ error: err.message });
+          res.json({ message: "Registrasi berhasil" });
+        }
+      );
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
 });
 
-// Login
-app.post("/login", (req, res) => {
+// LOGIN
+app.post("/api/signin", (req, res) => {
   const { username, password } = req.body;
 
-  db.query(
-    "SELECT * FROM users WHERE username = ?",
-    [username],
-    async (err, results) => {
-      if (err) return res.status(500).json({ error: err.message });
-      if (results.length === 0)
-        return res.status(401).json({ message: "User not found" });
+  db.query("SELECT * FROM users WHERE username = ?", [username], async (err, results) => {
+    if (err) return res.status(500).json({ error: err.message });
+    if (results.length === 0) return res.status(401).json({ message: "Username tidak ditemukan" });
 
-      const user = results[0];
-      const match = await bcrypt.compare(password, user.password);
-      if (!match)
-        return res.status(401).json({ message: "Password incorrect" });
+    const user = results[0];
+    const match = await bcrypt.compare(password, user.password);
+    if (!match) return res.status(401).json({ message: "Password salah" });
 
-      const token = jwt.sign(
-        { id: user.id, role: user.role },
-        process.env.JWT_SECRET,
-        { expiresIn: "1h" }
-      );
+    // Buat token JWT
+    const token = jwt.sign(
+      { id: user.id, role: user.role },
+      process.env.JWT_SECRET,
+      { expiresIn: "1h" }
+    );
 
-      res.json({ message: "Login successful", token, role: user.role });
-    }
-  );
+    res.json({ message: "Login sukses", token, role: user.role });
+  });
 });
 
+// Jalankan server
 app.listen(process.env.PORT, () => {
   console.log(`🚀 Server running at http://localhost:${process.env.PORT}`);
 });
