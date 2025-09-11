@@ -10,7 +10,7 @@ export default function Signin() {
     e.preventDefault();
 
     try {
-      const response = await fetch("http://localhost:4000/login", {
+      const response = await fetch("http://localhost:4000/api/auth/signin", {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
