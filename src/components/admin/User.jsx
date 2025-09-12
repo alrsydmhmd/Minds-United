@@ -2,7 +2,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import DashboardLayout from "../pages/DashboardLayout";
-import defaultAvatar from "../../assets/1.png"; // ganti sesuai gambar lokal
 
 export default function User() {
   const navigate = useNavigate();
@@ -190,7 +189,7 @@ export default function User() {
                 <th className="p-2 border">ID</th>
                 <th className="p-2 border">Username</th>
                 <th className="p-2 border">Role</th>
-                <th className="p-2 border">Avatar</th>
+                <th className="p-2 border">Created</th>
                 <th className="p-2 border">Action</th>
               </tr>
             </thead>
@@ -200,13 +199,7 @@ export default function User() {
                   <td className="p-2 border">{u.id}</td>
                   <td className="p-2 border">{u.username}</td>
                   <td className="p-2 border capitalize">{u.role}</td>
-                  <td className="p-2 border">
-                    <img
-                      src={defaultAvatar}
-                      alt="avatar"
-                      className="w-10 h-10 rounded-full object-cover"
-                    />
-                  </td>
+                  <td className="p-2 border">{new Date(u.created_at).toLocaleDateString()}</td>
                   <td className="p-2 border flex gap-2">
                     <button
                       onClick={() => handleEdit(u)}

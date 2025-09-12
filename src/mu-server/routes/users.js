@@ -6,12 +6,12 @@ const router = express.Router();
 
 // GET semua pengguna
 router.get("/", (req, res) => {
-  db.query("SELECT id, username, role FROM users", (err, results) => {
+  db.query("SELECT id, username, role, created_at FROM users", (err, results) => {
     if (err) {
-      console.error("❌ Error ambil users:", err);
+      console.error("Error ambil users:", err);
       return res.status(500).json({ error: err.message });
     }
-    res.json(results); // hasil query berupa array
+    res.json(results); // hasil query berupa array of users
   });
 });
 
@@ -27,7 +27,7 @@ router.delete("/:id", (req, res) => {
       return res.status(404).json({ message: "User tidak ditemukan" });
     }
 
-    // Cek apakah tabel kosong
+    // Cek apakah tabel kosong → reset auto increment
     db.query("SELECT COUNT(*) as count FROM users", (err, rows) => {
       if (err) {
         console.error("Error cek users:", err);
@@ -35,7 +35,6 @@ router.delete("/:id", (req, res) => {
       }
 
       if (rows[0].count === 0) {
-        // Reset AUTO_INCREMENT kalau tabel kosong
         db.query("ALTER TABLE users AUTO_INCREMENT = 1", (err2) => {
           if (err2) console.error("Error reset auto increment:", err2);
         });
@@ -46,24 +45,27 @@ router.delete("/:id", (req, res) => {
   });
 });
 
-// Edit User by ID
-router.put("/:id", async (req, res) => {
-  const {id} = req.params;
+// UPDATE pengguna by ID
+router.put("/:id", (req, res) => {
+  const { id } = req.params;
   const { username, role } = req.body;
 
   if (!username || !role) {
-    return res.status(400).json({message: "Username dan role wajib diisi"});
+    return res.status(400).json({ message: "Username dan role wajib diisi" });
   }
 
   db.query(
     "UPDATE users SET username = ?, role = ? WHERE id = ?",
     [username, role, id],
     (err, result) => {
-      if (err) return res.status(500).json({ error: err.message});
-      if (result.affectedRows === 0) {
-        return res.status(400).json({ message: "User tidak di temukan"});
+      if (err) {
+        console.error("Error update user:", err);
+        return res.status(500).json({ error: err.message });
       }
-      res.json({ message: "User berhasil di perbarui "});
+      if (result.affectedRows === 0) {
+        return res.status(404).json({ message: "User tidak ditemukan" });
+      }
+      res.json({ message: "User berhasil diperbarui" });
     }
   );
 });

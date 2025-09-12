@@ -16,7 +16,7 @@ export default function Sidebar() {
   const menuItems = [
     { name: "Dashboard", path: "/dashboard/admin", icon: <LayoutDashboard size={20} /> },
     { name: "Users", path: "/admin/user", icon: <User size={20} /> },
-    { name: "Programs", path: "/dashboard/programs", icon: <BookOpen size={20} /> },
+    { name: "Programs", path: "/admin/programs", icon: <BookOpen size={20} /> },
     { name: "Counseling", path: "/dashboard/counseling", icon: <Brain size={20} /> },
     { name: "Articles", path: "/dashboard/articles", icon: <FileText size={20} /> },
     { name: "Events", path: "/dashboard/events", icon: <Calendar size={20} /> },
@@ -54,7 +54,7 @@ export default function Sidebar() {
         <button
           onClick={() => {
             localStorage.removeItem("token");
-            window.location.href = "/signin";
+            window.location.href = "/login";
           }}
           className="flex items-center gap-3 p-2 w-full text-left rounded-lg hover:bg-red-600 transition-colors"
         >

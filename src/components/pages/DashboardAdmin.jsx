@@ -2,7 +2,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import DashboardLayout from "./DashboardLayout";
-import defaultAvatar from "../../assets/1.png"; // ganti sesuai gambar lokal
 
 export default function DashboardAdmin() {
   const navigate = useNavigate();
@@ -73,7 +72,6 @@ export default function DashboardAdmin() {
                 <th className="p-2 border">ID</th>
                 <th className="p-2 border">Username</th>
                 <th className="p-2 border">Role</th>
-                <th className="p-2 border">Avatar</th>
                 <th className="p-2 border">Action</th>
               </tr>
             </thead>
@@ -83,13 +81,6 @@ export default function DashboardAdmin() {
                   <td className="p-2 border">{u.id}</td>
                   <td className="p-2 border">{u.username}</td>
                   <td className="p-2 border capitalize">{u.role}</td>
-                  <td className="p-2 border">
-                    <img
-                      src={defaultAvatar}
-                      alt="avatar"
-                      className="w-10 h-10 rounded-full object-cover"
-                    />
-                  </td>
                   <td className="p-2 border">
                     <button
                         onClick={() => handleDelete(u.id)}
