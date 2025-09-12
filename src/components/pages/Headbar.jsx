@@ -1,3 +1,5 @@
+import user from "../../assets/1.png";
+
 // src/components/Headbar.jsx
 export default function Headbar({ username }) {
   return (
@@ -6,7 +8,7 @@ export default function Headbar({ username }) {
       <div className="flex items-center gap-3">
         <span className="text-gray-600">Hi, {username}</span>
         <img
-          src="https://via.placeholder.com/40"
+          src={user}
           alt="Profile"
           className="w-10 h-10 rounded-full border"
         />

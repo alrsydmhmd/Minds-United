@@ -20,7 +20,7 @@ router.delete("/:id", (req, res) => {
   const { id } = req.params;
   db.query("DELETE FROM users WHERE id = ?", [id], (err, result) => {
     if (err) {
-      console.error("❌ Error hapus user:", err);
+      console.error("Error hapus user:", err);
       return res.status(500).json({ error: err.message });
     }
     if (result.affectedRows === 0) {
@@ -30,7 +30,7 @@ router.delete("/:id", (req, res) => {
     // Cek apakah tabel kosong
     db.query("SELECT COUNT(*) as count FROM users", (err, rows) => {
       if (err) {
-        console.error("❌ Error cek users:", err);
+        console.error("Error cek users:", err);
         return res.status(500).json({ error: err.message });
       }
 
@@ -44,6 +44,28 @@ router.delete("/:id", (req, res) => {
       res.json({ message: "User berhasil dihapus" });
     });
   });
+});
+
+// Edit User by ID
+router.put("/:id", async (req, res) => {
+  const {id} = req.params;
+  const { username, role } = req.body;
+
+  if (!username || !role) {
+    return res.status(400).json({message: "Username dan role wajib diisi"});
+  }
+
+  db.query(
+    "UPDATE users SET username = ?, role = ? WHERE id = ?",
+    [username, role, id],
+    (err, result) => {
+      if (err) return res.status(500).json({ error: err.message});
+      if (result.affectedRows === 0) {
+        return res.status(400).json({ message: "User tidak di temukan"});
+      }
+      req.json({ message: "User berhasil di perbarui "});
+    }
+  );
 });
 
 export default router;

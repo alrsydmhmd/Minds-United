@@ -19,6 +19,9 @@ import Register from"./components/pages/Register";
 import DashboardAdmin from "./components/pages/DashboardAdmin";
 import DashboardUser from "./components/pages/DashboardUser";
 
+// Admin
+import User from "./components/admin/User";
+
 function LandingPage() {
   return (
     <>
@@ -52,6 +55,9 @@ ReactDOM.createRoot(document.getElementById("root")).render(
 
         {/* Dashboard User */}
         <Route path="/dashboard/user" element={<DashboardUser />} />
+
+        {/* Admin User */}
+        <Route path="/admin/user" element={<User />} />
       </Routes>
     </Router>
   </React.StrictMode>

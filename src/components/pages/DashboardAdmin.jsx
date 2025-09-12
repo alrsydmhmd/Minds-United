@@ -74,6 +74,7 @@ export default function DashboardAdmin() {
                 <th className="p-2 border">Username</th>
                 <th className="p-2 border">Role</th>
                 <th className="p-2 border">Avatar</th>
+                <th className="p-2 border">Action</th>
               </tr>
             </thead>
             <tbody>

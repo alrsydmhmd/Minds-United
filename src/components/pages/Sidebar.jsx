@@ -2,7 +2,7 @@
 import { NavLink } from "react-router-dom";
 import {
   LayoutDashboard,
-  Users,
+  User,
   BookOpen,
   Brain,
   FileText,
@@ -15,7 +15,7 @@ import {
 export default function Sidebar() {
   const menuItems = [
     { name: "Dashboard", path: "/dashboard/admin", icon: <LayoutDashboard size={20} /> },
-    { name: "Users", path: "/dashboard/users", icon: <Users size={20} /> },
+    { name: "Users", path: "/admin/user", icon: <User size={20} /> },
     { name: "Programs", path: "/dashboard/programs", icon: <BookOpen size={20} /> },
     { name: "Counseling", path: "/dashboard/counseling", icon: <Brain size={20} /> },
     { name: "Articles", path: "/dashboard/articles", icon: <FileText size={20} /> },
