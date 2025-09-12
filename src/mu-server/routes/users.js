@@ -63,7 +63,7 @@ router.put("/:id", async (req, res) => {
       if (result.affectedRows === 0) {
         return res.status(400).json({ message: "User tidak di temukan"});
       }
-      req.json({ message: "User berhasil di perbarui "});
+      res.json({ message: "User berhasil di perbarui "});
     }
   );
 });

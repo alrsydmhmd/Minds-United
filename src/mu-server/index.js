@@ -4,6 +4,7 @@ import cors from "cors";
 import dotenv from "dotenv";
 import authRouter from "./routes/auth.js";
 import usersRouter from "./routes/users.js";
+import chalk from "chalk";
 import "./db.js"; // koneksi DB
 
 dotenv.config();
@@ -22,5 +23,8 @@ app.use("/api/auth", authRouter);
 app.use("/api/users", usersRouter);
 
 app.listen(process.env.PORT, () => {
-  console.log(`🚀 Server running at http://localhost:${process.env.PORT}`);
+  console.log(chalk.green.bold("✔ Server running at ") + chalk.cyan(`http://localhost:${process.env.PORT}`));
+  console.log(chalk.blue("✔ API ready and waiting for requests"));
+  console.log(chalk.yellow("✔ Connected to MySQL Database"));
+  console.log(chalk.magenta("✔ Auth endpoints available at ") + chalk.cyan("/api/signin") + " & " + chalk.cyan("/api/register"));
 });

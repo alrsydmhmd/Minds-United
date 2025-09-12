@@ -56,7 +56,7 @@ export default function DashboardAdmin() {
 
   return (
     <DashboardLayout username={username} onLogout={handleLogout}>
-      <h2 className="text-2xl font-bold mb-6">Admin Dashboard</h2>
+      <h2 className="text-2xl font-bold mb-6">Dashboard</h2>
 
       {/* List Users */}
       <div className="bg-white p-6 rounded-lg shadow">
