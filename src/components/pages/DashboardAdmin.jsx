@@ -1,100 +1,83 @@
-// src/pages/DashboardAdmin.jsx
-import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import DashboardLayout from "./DashboardLayout";
+// src/pages/DashboardLayout.jsx
+import { useState } from "react";
+import { Menu } from "lucide-react"; // ikon hamburger
+import { Link } from "react-router-dom";
 
-export default function DashboardAdmin() {
-  const navigate = useNavigate();
-  const [users, setUsers] = useState([]);
-  const [loading, setLoading] = useState(true);
-
-  const username = localStorage.getItem("username") || "Admin";
-
-  const handleLogout = () => {
-    localStorage.removeItem("token");
-    navigate("/signin");
-  };
-
-  // Ambil data users
-  const fetchUsers = async () => {
-    try {
-      const res = await fetch("http://localhost:4000/api/users");
-      const data = await res.json();
-      setUsers(Array.isArray(data) ? data : []);
-    } catch (err) {
-      console.error("Error fetch users:", err);
-      setUsers([]);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // Hapus user
-  const handleDelete = async (id) => {
-    if (!window.confirm("Yakin ingin hapus user ini?")) return;
-
-    try {
-      const res = await fetch(`http://localhost:4000/api/users/${id}`, {
-        method: "DELETE",
-      });
-      const data = await res.json();
-      if (res.ok) {
-        alert(data.message);
-        fetchUsers(); // refresh data
-      } else {
-        alert(data.error || data.message);
-      }
-    } catch (err) {
-      console.error("Error delete user:", err);
-    }
-  };
-
-  useEffect(() => {
-    fetchUsers();
-  }, []);
+export default function DashboardLayout({ children, username, onLogout }) {
+  const [isOpen, setIsOpen] = useState(true);
 
   return (
-    <DashboardLayout username={username} onLogout={handleLogout}>
-      <h2 className="text-2xl font-bold mb-6">Dashboard</h2>
+    <div className="flex h-screen bg-gray-100">
+      {/* Sidebar */}
+      <div
+        className={`bg-gray-900 text-white transition-all duration-300 ${
+          isOpen ? "w-64" : "w-16"
+        }`}
+      >
+        <div className="flex items-center justify-between p-4">
+          <h1
+            className={`text-lg font-bold transition-opacity ${
+              isOpen ? "opacity-100" : "opacity-0"
+            }`}
+          >
+            Minds United
+          </h1>
+          <button
+            onClick={() => setIsOpen(!isOpen)}
+            className="text-white focus:outline-none"
+          >
+            <Menu />
+          </button>
+        </div>
 
-      {/* List Users */}
-      <div className="bg-white p-6 rounded-lg shadow">
-        <h3 className="text-lg font-semibold mb-4">Daftar Pengguna</h3>
-
-        {loading ? (
-          <p>Loading users...</p>
-        ) : users.length === 0 ? (
-          <p className="text-gray-500">Belum ada data user.</p>
-        ) : (
-          <table className="w-full border-collapse">
-            <thead>
-              <tr className="bg-gray-100 text-left">
-                <th className="p-2 border">ID</th>
-                <th className="p-2 border">Username</th>
-                <th className="p-2 border">Role</th>
-                <th className="p-2 border">Action</th>
-              </tr>
-            </thead>
-            <tbody>
-              {users.map((u) => (
-                <tr key={u.id} className="hover:bg-gray-50">
-                  <td className="p-2 border">{u.id}</td>
-                  <td className="p-2 border">{u.username}</td>
-                  <td className="p-2 border capitalize">{u.role}</td>
-                  <td className="p-2 border">
-                    <button
-                        onClick={() => handleDelete(u.id)}
-                        className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600"
-                      >
-                      Delete
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        )}
+        <ul className="mt-6 space-y-2">
+          <li>
+            <Link
+              to="/admin"
+              className="flex items-center gap-2 p-2 hover:bg-gray-700"
+            >
+              📊 <span className={`${isOpen ? "block" : "hidden"}`}>Dashboard</span>
+            </Link>
+          </li>
+          <li>
+            <Link
+              to="/admin/user"
+              className="flex items-center gap-2 p-2 hover:bg-gray-700"
+            >
+              👥 <span className={`${isOpen ? "block" : "hidden"}`}>Users</span>
+            </Link>
+          </li>
+          <li>
+            <Link
+              to="/admin/programs"
+              className="flex items-center gap-2 p-2 hover:bg-gray-700"
+            >
+              📚 <span className={`${isOpen ? "block" : "hidden"}`}>Programs</span>
+            </Link>
+          </li>
+          {/* Tambahkan menu lain sesuai kebutuhan */}
+        </ul>
       </div>
-    </DashboardLayout>
+
+      {/* Main Content */}
+      <div className="flex-1 flex flex-col">
+        {/* Header */}
+        <header className="flex justify-between items-center bg-white shadow px-6 py-3">
+          <h2 className="text-xl font-semibold">Admin Panel</h2>
+          <div className="flex items-center gap-4">
+            <span>Hi, {username}</span>
+            <button
+              onClick={onLogout}
+              className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600"
+            >
+              Logout
+            </button>
+          </div>
+        </header>
+
+        {/* Page Content */}
+        <main className="p-6 overflow-y-auto">{children}</main>
+      </div>
+    </div>
   );
 }
