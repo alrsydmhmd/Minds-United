@@ -34,38 +34,29 @@ app.get("/", (req, res) => {
 // ======================= REGISTER =======================
 app.post("/api/register", async (req, res) => {
   try {
-    const { username, email, password } = req.body;
+    const { nama, email, password } = req.body;
+    console.log("Data diterima:", req.body);
 
-    if (!username || !email || !password) {
-      return res.status(400).json({ message: "Semua field wajib diisi" });
+    if (!nama || !email || !password) {
+      return res.status(400).json({ message: "Data tidak lengkap" });
     }
+    
+    const sql = "INSERT INTO users (nama, email, password) VALUES (?, ?, ?)";
 
-    // Cek apakah email sudah terdaftar
-    db.query("SELECT * FROM users WHERE email = ?", [email], async (err, results) => {
-      if (err) return res.status(500).json({ error: "Database error" });
-      if (results.length > 0) {
-        return res.status(400).json({ message: "Email sudah terdaftar" });
+    const hashedPassword = await bcrypt.hash(password, 10);
+    db.query(sql, [nama, email, hashedPassword], (err, result) => {
+      if (err) {
+        console.error("MySQL Error:", err);
+        return res.status(500).json({ message: "Gagal mendaftar" });
       }
 
-      // Hash password sebelum simpan
-      const hashedPassword = await bcrypt.hash(password, 10);
-
-      // Simpan user baru
-      db.query(
-        "INSERT INTO users (username, email, password, role) VALUES (?, ?, ?, ?)",
-        [username, email, hashedPassword, "admin"], // default role: admin
-        (err, result) => {
-          if (err) return res.status(500).json({ error: "Gagal menyimpan user" });
-
-          res.status(201).json({ message: "Registrasi berhasil" });
-        }
-      );
+      res.json({ message: "Registrasi berhasil", userId: result.insertId });
     });
   } catch (error) {
-    res.status(500).json({ error: "Server error" });
+    console.error("Server Error:", error);
+    res.status(500).json({ message: "Terjadi kesalahan server" });
   }
 });
-
 
 // ======================= LOGIN =======================
 app.post("/api/login", (req, res) => {
@@ -80,18 +71,11 @@ app.post("/api/login", (req, res) => {
 
     if (!isMatch) return res.status(401).json({ error: "Password salah" });
 
-    // Buat JWT token
-    const token = jwt.sign(
-      { id: user.id, role: user.role },
-      "minds_secret_key",
-      { expiresIn: "1h" }
-    );
-
     res.json({
       message: "Login berhasil",
       token,
       role: user.role,
-      username: user.username,
+      username: user.nama,
     });
   });
 });
