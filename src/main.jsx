@@ -14,14 +14,10 @@ import Testimoni from "./components/landingpage/Testimoni";
 import Footer from "./components/landingpage/Footer";
 
 // Pages
-import Signin from "./components/pages/Signin";
-import Register from"./components/pages/Register";
-import DashboardAdmin from "./components/pages/DashboardAdmin";
+import Login from "./components/pages/Login";
+import Signup  from"./components/pages/Signup";
+import AdminDashboard from "./components/pages/AdminDashboard";
 import DashboardUser from "./components/pages/DashboardUser";
-
-// Admin
-import User from "./components/admin/User";
-import Programs from "./components/admin/Programs";
 
 function LandingPage() {
   return (
@@ -45,21 +41,15 @@ ReactDOM.createRoot(document.getElementById("root")).render(
         {/* Halaman Utama */}
         <Route path="/" element={<LandingPage />} />
 
-        {/* Form Sign In */}
-        <Route path="/login" element={<Signin />} />
-
-        {/* Form Register */}
-        <Route path="/register" element={<Register />} />
+        {/* Halaman Masuk atau Registrasi */}
+        <Route path="/login" element={<Login />} />
+        <Route path="/signup" element={<Signup />} />
 
         {/* Dashboard Admin */}
-        <Route path="/dashboard/admin" element={<DashboardAdmin />} />
+        <Route path="/admin" element={<AdminDashboard />} />
 
         {/* Dashboard User */}
-        <Route path="/dashboard/user" element={<DashboardUser />} />
-
-        {/* Admin */}
-        <Route path="/admin/user" element={<User />} />
-        <Route path="/admin/programs" element={<Programs />} />
+        <Route path="/user" element={<DashboardUser />} />
       </Routes>
     </Router>
   </React.StrictMode>

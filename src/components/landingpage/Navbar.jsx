@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+// import { Link } from "react-router-dom";
 import Logo from "../../assets/1.png";
 
 export default function Navbar() {
@@ -82,7 +82,7 @@ export default function Navbar() {
             </button>
           </li>
 
-          {/* Login & Register */}
+          {/* Login & Register
           <li>
             <Link
               to="/signin"
@@ -98,7 +98,7 @@ export default function Navbar() {
             >
               Registrasi
             </Link>
-          </li>
+          </li> */}
         </ul>
       </nav>
     </header>
