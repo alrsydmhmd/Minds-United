@@ -21,6 +21,7 @@ import DashboardUser from "./components/pages/DashboardUser";
 // Admin
 import Users from "./components/admin/Users";
 import Programs from "./components/admin/Programs";
+import ArtikelAdmin from "./components/admin/Article";
 
 function LandingPage() {
   return (
@@ -53,6 +54,7 @@ ReactDOM.createRoot(document.getElementById("root")).render(
 
         <Route path="/admin/user" element={<Users />} />
         <Route path="/admin/program" element={<Programs /> } />
+        <Route path="/admin/article" element={<ArtikelAdmin />} />
       </Routes>
     </Router>
   </React.StrictMode>

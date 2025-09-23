@@ -4,11 +4,12 @@ import {
   LayoutDashboard,
   Users,
   BookOpen,
-  MessageCircle,
+  NewspaperIcon,
   BarChart3,
   Settings,
   HelpCircle,
   LogOut,
+  Newspaper,
 } from "lucide-react";
 
 export default function SidebarAdmin() {
@@ -18,7 +19,7 @@ export default function SidebarAdmin() {
     { title: "Dashboard", icon: <LayoutDashboard size={18} />, link: "/user" },
     { title: "Kelola Pengguna", icon: <Users size={18} />, link: "/admin/user" },
     { title: "Program", icon: <BookOpen size={18} />, link: "/admin/program" },
-    { title: "Konseling", icon: <MessageCircle size={18} />, link: "/admin/counseling" },
+    { title: "Article", icon: <NewspaperIcon size={18} />, link: "/admin/article" },
     { title: "Laporan", icon: <BarChart3 size={18} />, link: "/admin/reports" },
     { title: "Pengaturan", icon: <Settings size={18} />, link: "/admin/settings" },
   ];

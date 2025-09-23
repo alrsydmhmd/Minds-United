@@ -33,17 +33,17 @@ app.get("/", (req, res) => {
 // ======================= REGISTER =======================
 app.post("/api/register", async (req, res) => {
   try {
-    const { nama, email, password } = req.body;
+    const { username, email, password, role } = req.body;
     console.log("Data diterima:", req.body);
 
-    if (!nama || !email || !password) {
+    if (!username || !email || !password) {
       return res.status(400).json({ message: "Data tidak lengkap" });
     }
-    
-    const sql = "INSERT INTO users (nama, email, password) VALUES (?, ?, ?)";
 
     const hashedPassword = await bcrypt.hash(password, 10);
-    db.query(sql, [nama, email, hashedPassword], (err, result) => {
+
+    const sql = "INSERT INTO users (username, email, password, role) VALUES (?, ?, ?, ?)";
+    db.query(sql, [username, email, hashedPassword, role || "user"], (err, result) => {
       if (err) {
         console.error("MySQL Error:", err);
         return res.status(500).json({ message: "Gagal mendaftar" });
@@ -56,6 +56,7 @@ app.post("/api/register", async (req, res) => {
     res.status(500).json({ message: "Terjadi kesalahan server" });
   }
 });
+
 
 // ======================= LOGIN =======================
 app.post("/api/login", (req, res) => {
@@ -73,14 +74,15 @@ app.post("/api/login", (req, res) => {
     res.json({
       message: "Login berhasil",
       role: user.role,
-      username: user.nama,
+      username: user.username,
     });
   });
 });
 
+
 // ======================= GET ALL USERS =======================
 app.get("/api/users", (req, res) => {
-  const sql = "SELECT id, username, email, role FROM users";
+  const sql = "SELECT id, username, email, role, created_at FROM users";
   db.query(sql, (err, results) => {
     if (err) {
       console.error("MySQL Error:", err);
@@ -90,23 +92,32 @@ app.get("/api/users", (req, res) => {
   });
 });
 
+
 // ======================= CREATE USER =======================
-app.post("/api/users", (req, res) => {
-  const { username, email, password, role } = req.body;
+app.post("/api/users", async (req, res) => {
+  try {
+    const { username, email, password, role } = req.body;
 
-  if (!username || !email || !password) {
-    return res.status(400).json({ message: "Data tidak lengkap" });
-  }
-
-  const sql = "INSERT INTO users (username, email, password, role) VALUES (?, ?, ?, ?)";
-  db.query(sql, [username, email, password, role || "user"], (err, result) => {
-    if (err) {
-      console.error("MySQL Error:", err);
-      return res.status(500).json({ message: "Gagal menambahkan user" });
+    if (!username || !email || !password) {
+      return res.status(400).json({ message: "Data tidak lengkap" });
     }
-    res.json({ message: "User berhasil ditambahkan", userId: result.insertId });
-  });
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    const sql = "INSERT INTO users (username, email, password, role) VALUES (?, ?, ?, ?)";
+    db.query(sql, [username, email, hashedPassword, role || "user"], (err, result) => {
+      if (err) {
+        console.error("MySQL Error:", err);
+        return res.status(500).json({ message: "Gagal menambahkan user" });
+      }
+      res.json({ message: "User berhasil ditambahkan", userId: result.insertId });
+    });
+  } catch (error) {
+    console.error("Server Error:", error);
+    res.status(500).json({ message: "Terjadi kesalahan server" });
+  }
 });
+
 
 // ======================= UPDATE USER =======================
 app.put("/api/users/:id", (req, res) => {
@@ -123,6 +134,7 @@ app.put("/api/users/:id", (req, res) => {
   });
 });
 
+
 // ======================= DELETE USER =======================
 app.delete("/api/users/:id", (req, res) => {
   const { id } = req.params;
@@ -136,6 +148,7 @@ app.delete("/api/users/:id", (req, res) => {
   });
 });
 
+
 // ======================= GET ALL PROGRAMS =======================
 app.get("/api/programs", (req, res) => {
   const sql = "SELECT id, title, description, icon FROM programs";
@@ -147,6 +160,7 @@ app.get("/api/programs", (req, res) => {
     res.json(results);
   });
 });
+
 
 // ======================= CREATE PROGRAM =======================
 app.post("/api/programs", (req, res) => {
@@ -165,7 +179,111 @@ app.post("/api/programs", (req, res) => {
     res.json({ message: "Program berhasil ditambahkan", programId: result.insertId });
   });
 });
+// ======================= UPDATE PROGRAM =======================
+app.put("/api/programs/:id", (req, res) => {
+  const { id } = req.params;
+  const { title, description, icon } = req.body;
+  if (!title || !description) {
+    return res.status(400).json({ message: "Data tidak lengkap" });
+  }
+  const sql = "UPDATE programs SET title = ?, description = ?, icon = ? WHERE id = ?";
+  db.query(sql, [title, description, icon || "📌", id], (err, result) => {
+    if (err) {
+      console.error("MySQL Error:", err);
+      return res.status(500).json({ message: "Gagal update program" });
+    }
+    res.json({ message: "Program berhasil diupdate" });
+  }
+);
+});
 
+// ======================= DELETE PROGRAM ======================= 
+app.delete("/api/programs/:id", (req, res) => {
+  const { id } = req.params;
+  const sql = "DELETE FROM programs WHERE id = ?";  
+  db.query(sql, [id], (err, result) => {
+    if (err) {
+      console.error("MySQL Error:", err);
+      return res.status(500).json({ message: "Gagal hapus program" });
+    }
+    res.json({ message: "Program berhasil dihapus" });
+  });
+}
+);
+
+// ======================= ARTICLES =======================
+const router = express.Router();
+app.use(router);  
+
+// GET all articles
+router.get("/api/articles", (req, res) => {
+  const sql = "SELECT id, title, excerpt, image, DATE_FORMAT(date_published, '%Y-%m-%d') AS date_published, author, slug, created_at, updated_at FROM articles ORDER BY date_published DESC, id DESC";
+  db.query(sql, (err, results) => {
+    if (err) {
+      console.error("MySQL Error (GET /api/articles):", err);
+      return res.status(500).json({ message: "Gagal mengambil artikel", error: err.message });
+    }
+    res.json(results);
+  });
+});
+
+// GET single article
+router.get("/api/articles/:id", (req, res) => {
+  const { id } = req.params;
+  const sql = "SELECT * FROM articles WHERE id = ?";
+  db.query(sql, [id], (err, results) => {
+    if (err) {
+      console.error("MySQL Error (GET /api/articles/:id):", err);
+      return res.status(500).json({ message: "Gagal mengambil artikel", error: err.message });
+    }
+    if (results.length === 0) return res.status(404).json({ message: "Artikel tidak ditemukan" });
+    res.json(results[0]);
+  });
+});
+
+// CREATE article
+router.post("/api/articles", (req, res) => {
+  const { title, excerpt, content, image, date_published, author, slug } = req.body;
+  if (!title) return res.status(400).json({ message: "Title wajib diisi" });
+
+  const sql = "INSERT INTO articles (title, excerpt, content, image, date_published, author, slug) VALUES (?, ?, ?, ?, ?, ?, ?)";
+  db.query(sql, [title, excerpt || null, content || null, image || null, date_published || null, author || null, slug || null], (err, result) => {
+    if (err) {
+      console.error("MySQL Error (POST /api/articles):", err);
+      return res.status(500).json({ message: "Gagal membuat artikel", error: err.message });
+    }
+    res.status(201).json({ message: "Artikel berhasil dibuat", articleId: result.insertId });
+  });
+});
+
+// UPDATE article
+router.put("/api/articles/:id", (req, res) => {
+  const { id } = req.params;
+  const { title, excerpt, content, image, date_published, author, slug } = req.body;
+  if (!title) return res.status(400).json({ message: "Title wajib diisi" });
+
+  const sql = "UPDATE articles SET title = ?, excerpt = ?, content = ?, image = ?, date_published = ?, author = ?, slug = ? WHERE id = ?";
+  db.query(sql, [title, excerpt || null, content || null, image || null, date_published || null, author || null, slug || null, id], (err, result) => {
+    if (err) {
+      console.error("MySQL Error (PUT /api/articles/:id):", err);
+      return res.status(500).json({ message: "Gagal update artikel", error: err.message });
+    }
+    res.json({ message: "Artikel berhasil diupdate" });
+  });
+});
+
+// DELETE article
+router.delete("/api/articles/:id", (req, res) => {
+  const { id } = req.params;
+  const sql = "DELETE FROM articles WHERE id = ?";
+  db.query(sql, [id], (err, result) => {
+    if (err) {
+      console.error("MySQL Error (DELETE /api/articles/:id):", err);
+      return res.status(500).json({ message: "Gagal hapus artikel", error: err.message });
+    }
+    res.json({ message: "Artikel berhasil dihapus" });
+  });
+});
 
 // ======================= RUN SERVER =======================
 const PORT = 4000;
