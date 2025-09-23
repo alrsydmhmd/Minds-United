@@ -2,7 +2,6 @@ import express from "express";
 import mysql from "mysql2";
 import cors from "cors";
 import bcrypt from "bcrypt";
-import jwt from "jsonwebtoken";
 
 const app = express();
 app.use(cors());
@@ -73,10 +72,97 @@ app.post("/api/login", (req, res) => {
 
     res.json({
       message: "Login berhasil",
-      token,
       role: user.role,
       username: user.nama,
     });
+  });
+});
+
+// ======================= GET ALL USERS =======================
+app.get("/api/users", (req, res) => {
+  const sql = "SELECT id, username, email, role FROM users";
+  db.query(sql, (err, results) => {
+    if (err) {
+      console.error("MySQL Error:", err);
+      return res.status(500).json({ message: "Gagal mengambil data user" });
+    }
+    res.json(results);
+  });
+});
+
+// ======================= CREATE USER =======================
+app.post("/api/users", (req, res) => {
+  const { username, email, password, role } = req.body;
+
+  if (!username || !email || !password) {
+    return res.status(400).json({ message: "Data tidak lengkap" });
+  }
+
+  const sql = "INSERT INTO users (username, email, password, role) VALUES (?, ?, ?, ?)";
+  db.query(sql, [username, email, password, role || "user"], (err, result) => {
+    if (err) {
+      console.error("MySQL Error:", err);
+      return res.status(500).json({ message: "Gagal menambahkan user" });
+    }
+    res.json({ message: "User berhasil ditambahkan", userId: result.insertId });
+  });
+});
+
+// ======================= UPDATE USER =======================
+app.put("/api/users/:id", (req, res) => {
+  const { id } = req.params;
+  const { username, email, role } = req.body;
+
+  const sql = "UPDATE users SET username = ?, email = ?, role = ? WHERE id = ?";
+  db.query(sql, [username, email, role, id], (err, result) => {
+    if (err) {
+      console.error("MySQL Error:", err);
+      return res.status(500).json({ message: "Gagal update user" });
+    }
+    res.json({ message: "User berhasil diupdate" });
+  });
+});
+
+// ======================= DELETE USER =======================
+app.delete("/api/users/:id", (req, res) => {
+  const { id } = req.params;
+  const sql = "DELETE FROM users WHERE id = ?";
+  db.query(sql, [id], (err, result) => {
+    if (err) {
+      console.error("MySQL Error:", err);
+      return res.status(500).json({ message: "Gagal hapus user" });
+    }
+    res.json({ message: "User berhasil dihapus" });
+  });
+});
+
+// ======================= GET ALL PROGRAMS =======================
+app.get("/api/programs", (req, res) => {
+  const sql = "SELECT id, title, description, icon FROM programs";
+  db.query(sql, (err, results) => {
+    if (err) {
+      console.error("MySQL Error:", err);
+      return res.status(500).json({ message: "Gagal mengambil data program" });
+    }
+    res.json(results);
+  });
+});
+
+// ======================= CREATE PROGRAM =======================
+app.post("/api/programs", (req, res) => {
+  const { title, description, icon } = req.body;
+
+  if (!title || !description) {
+    return res.status(400).json({ message: "Data tidak lengkap" });
+  }
+
+  const sql = "INSERT INTO programs (title, description, icon) VALUES (?, ?, ?)";
+  db.query(sql, [title, description, icon || "📌"], (err, result) => {
+    if (err) {
+      console.error("MySQL Error:", err);
+      return res.status(500).json({ message: "Gagal menambahkan program" });
+    }
+    res.json({ message: "Program berhasil ditambahkan", programId: result.insertId });
   });
 });
 

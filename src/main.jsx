@@ -16,8 +16,11 @@ import Footer from "./components/landingpage/Footer";
 // Pages
 import Login from "./components/pages/Login";
 import Signup  from"./components/pages/Signup";
-import AdminDashboard from "./components/pages/AdminDashboard";
 import DashboardUser from "./components/pages/DashboardUser";
+
+// Admin
+import Users from "./components/admin/Users";
+import Programs from "./components/admin/Programs";
 
 function LandingPage() {
   return (
@@ -45,11 +48,11 @@ ReactDOM.createRoot(document.getElementById("root")).render(
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
 
-        {/* Dashboard Admin */}
-        <Route path="/admin" element={<AdminDashboard />} />
-
         {/* Dashboard User */}
         <Route path="/user" element={<DashboardUser />} />
+
+        <Route path="/admin/user" element={<Users />} />
+        <Route path="/admin/program" element={<Programs /> } />
       </Routes>
     </Router>
   </React.StrictMode>
