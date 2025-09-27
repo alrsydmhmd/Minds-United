@@ -125,7 +125,7 @@ app.put("/api/users/:id", (req, res) => {
   const { username, email, role } = req.body;
 
   const sql = "UPDATE users SET username = ?, email = ?, role = ? WHERE id = ?";
-  db.query(sql, [username, email, role, id], (err, result) => {
+  db.query(sql, [username, email, role, id], (err) => {
     if (err) {
       console.error("MySQL Error:", err);
       return res.status(500).json({ message: "Gagal update user" });
@@ -139,7 +139,7 @@ app.put("/api/users/:id", (req, res) => {
 app.delete("/api/users/:id", (req, res) => {
   const { id } = req.params;
   const sql = "DELETE FROM users WHERE id = ?";
-  db.query(sql, [id], (err, result) => {
+  db.query(sql, [id], (err) => {
     if (err) {
       console.error("MySQL Error:", err);
       return res.status(500).json({ message: "Gagal hapus user" });
@@ -187,7 +187,7 @@ app.put("/api/programs/:id", (req, res) => {
     return res.status(400).json({ message: "Data tidak lengkap" });
   }
   const sql = "UPDATE programs SET title = ?, description = ?, icon = ? WHERE id = ?";
-  db.query(sql, [title, description, icon || "📌", id], (err, result) => {
+  db.query(sql, [title, description, icon || "📌", id], (err) => {
     if (err) {
       console.error("MySQL Error:", err);
       return res.status(500).json({ message: "Gagal update program" });
@@ -201,7 +201,7 @@ app.put("/api/programs/:id", (req, res) => {
 app.delete("/api/programs/:id", (req, res) => {
   const { id } = req.params;
   const sql = "DELETE FROM programs WHERE id = ?";  
-  db.query(sql, [id], (err, result) => {
+  db.query(sql, [id], (err) => {
     if (err) {
       console.error("MySQL Error:", err);
       return res.status(500).json({ message: "Gagal hapus program" });
@@ -263,7 +263,7 @@ router.put("/api/articles/:id", (req, res) => {
   if (!title) return res.status(400).json({ message: "Title wajib diisi" });
 
   const sql = "UPDATE articles SET title = ?, excerpt = ?, content = ?, image = ?, date_published = ?, author = ?, slug = ? WHERE id = ?";
-  db.query(sql, [title, excerpt || null, content || null, image || null, date_published || null, author || null, slug || null, id], (err, result) => {
+  db.query(sql, [title, excerpt || null, content || null, image || null, date_published || null, author || null, slug || null, id], (err) => {
     if (err) {
       console.error("MySQL Error (PUT /api/articles/:id):", err);
       return res.status(500).json({ message: "Gagal update artikel", error: err.message });
@@ -276,7 +276,7 @@ router.put("/api/articles/:id", (req, res) => {
 router.delete("/api/articles/:id", (req, res) => {
   const { id } = req.params;
   const sql = "DELETE FROM articles WHERE id = ?";
-  db.query(sql, [id], (err, result) => {
+  db.query(sql, [id], (err) => {
     if (err) {
       console.error("MySQL Error (DELETE /api/articles/:id):", err);
       return res.status(500).json({ message: "Gagal hapus artikel", error: err.message });

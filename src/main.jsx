@@ -3,15 +3,7 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
-// Landing page components
-import Navbar from "./components/landingpage/Navbar";
-import Header from "./components/landingpage/Header";
-import About from "./components/landingpage/About";
-import Program from "./components/landingpage/Program";
-import Layanan from "./components/landingpage/Layanan";
-import Artikel from "./components/landingpage/Artikel";
-import Testimoni from "./components/landingpage/Testimoni";
-import Footer from "./components/landingpage/Footer";
+import LandingPage from "./components/landingpage/LandingPage";
 
 // Pages
 import Login from "./components/pages/Login";
@@ -22,21 +14,6 @@ import DashboardUser from "./components/pages/DashboardUser";
 import Users from "./components/admin/Users";
 import Programs from "./components/admin/Programs";
 import ArtikelAdmin from "./components/admin/Article";
-
-function LandingPage() {
-  return (
-    <>
-      <Navbar />
-      <Header />
-      <About />
-      <Program />
-      <Layanan />
-      <Artikel />
-      <Testimoni />
-      <Footer />
-    </>
-  );
-}
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
